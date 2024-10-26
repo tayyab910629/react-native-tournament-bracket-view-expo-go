@@ -1,70 +1,140 @@
-import { Image, StyleSheet, Platform } from 'react-native';
+import React from 'react';
+import { ScrollView, StyleSheet, View, Text, Image, Dimensions } from 'react-native';
 
-import { HelloWave } from '@/components/HelloWave';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
+const screenWidth = Dimensions.get('window').width;
+
+// Placeholder image for all flags
+const placeholderFlag = require('@/assets/placeholder.png');
+
+// Define the data for each stage in the knockout bracket
+const stages = [
+  // Round of 16
+  [
+    { team1: 'Spain', score1: 4, team2: 'Georgia', score2: 1, status: 'Full time' },
+    { team1: 'Germany', score1: 2, team2: 'Denmark', score2: 0, status: 'Full time' },
+    { team1: 'Portugal', score1: 3, team2: 'France', score2: 0, status: 'Full time' },
+    { team1: 'Italy', score1: 1, team2: 'Netherlands', score2: 2, status: 'Full time' },
+    { team1: 'Belgium', score1: 3, team2: 'Croatia', score2: 2, status: 'Full time' },
+    { team1: 'Sweden', score1: 1, team2: 'Norway', score2: 2, status: 'Full time' },
+    { team1: 'Switzerland', score1: 2, team2: 'Austria', score2: 0, status: 'Full time' },
+    { team1: 'England', score1: 1, team2: 'Scotland', score2: 0, status: 'Full time' },
+  ],
+  // Quarter-finals
+  [
+    { team1: 'Spain', score1: 2, team2: 'Germany', score2: 1, status: 'Full time' },
+    { team1: 'Portugal', score1: 1, team2: 'Netherlands', score2: 2, status: 'Full time' },
+    { team1: 'Belgium', score1: 2, team2: 'Norway', score2: 1, status: 'Full time' },
+    { team1: 'Switzerland', score1: 1, team2: 'England', score2: 2, status: 'Full time' },
+  ],
+  // Semi-finals
+  [
+    { team1: 'Spain', score1: 2, team2: 'Netherlands', score2: 1, status: 'After extra time' },
+    { team1: 'Belgium', score1: 1, team2: 'England', score2: 2, status: 'Full time' },
+  ],
+  // Final
+  [
+    { team1: 'Spain', score1: 3, team2: 'England', score2: 1, status: 'Full time' },
+  ],
+];
 
 export default function HomeScreen() {
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({ ios: 'cmd + d', android: 'cmd + m' })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-        <ThemedText>
-          Tap the Explore tab to learn more about what's included in this starter app.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          When you're ready, run{' '}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+    <ScrollView contentContainerStyle={styles.container} horizontal>
+      {stages.map((stage, stageIndex) => (
+        <View key={stageIndex} style={styles.stageContainer}>
+          {stage.map((match, matchIndex) => (
+            <View key={matchIndex} style={styles.matchContainer}>
+              <View style={styles.card}>
+                <Text style={styles.status}>{match.status}</Text>
+                <View style={styles.team}>
+                  <Image source={placeholderFlag} style={styles.flag} />
+                  <Text style={styles.teamName}>{match.team1}</Text>
+                  <Text style={styles.score}>{match.score1}</Text>
+                </View>
+                <View style={styles.team}>
+                  <Image source={placeholderFlag} style={styles.flag} />
+                  <Text style={styles.teamName}>{match.team2}</Text>
+                  <Text style={styles.score}>{match.score2}</Text>
+                </View>
+              </View>
+              {/* Connecting lines for rounds except the Final */}
+              {stageIndex < stages.length - 1 && (
+                <View style={styles.lineContainer}>
+                  <View style={styles.verticalLine} />
+                  <View style={styles.horizontalLine} />
+                </View>
+              )}
+            </View>
+          ))}
+        </View>
+      ))}
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  titleContainer: {
+  container: {
+    paddingVertical: 16,
+    backgroundColor: '#0A0A1A',
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
   },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
+  stageContainer: {
+    width: screenWidth / 2,
+    alignItems: 'center',
   },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
+  matchContainer: {
+    marginBottom: 32,
+    alignItems: 'center',
+    position: 'relative',
+  },
+  card: {
+    backgroundColor: '#1A1A2E',
+    padding: 16,
+    borderRadius: 8,
+    width: 150,
+    alignItems: 'center',
+  },
+  status: {
+    color: '#FFD700',
+    fontSize: 14,
+    marginBottom: 4,
+  },
+  team: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginVertical: 4,
+  },
+  flag: {
+    width: 24,
+    height: 24,
+    marginRight: 8,
+  },
+  teamName: {
+    flex: 1,
+    color: '#FFF',
+    fontSize: 16,
+  },
+  score: {
+    color: '#FFF',
+    fontSize: 16,
+  },
+  lineContainer: {
     position: 'absolute',
+    right: -75, // Adjust to connect to the next round
+    top: 20,
+    alignItems: 'center',
+  },
+  verticalLine: {
+    width: 2,
+    height: 40,
+    backgroundColor: '#FFF',
+  },
+  horizontalLine: {
+    width: 75,
+    height: 2,
+    backgroundColor: '#FFF',
+    position: 'relative',
+    top: -20,
   },
 });
