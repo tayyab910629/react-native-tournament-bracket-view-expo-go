@@ -1,5 +1,11 @@
 import React from 'react';
-import { ScrollView, StyleSheet, View, Text, Image } from 'react-native';
+import {
+  ScrollView,
+  StyleSheet,
+  View,
+  Text,
+  Image,
+} from 'react-native';
 import Svg, { Line } from 'react-native-svg';
 
 const placeholderFlag = require('@/assets/placeholder.png');
@@ -71,134 +77,107 @@ export default function HomeScreen() {
   const horizontalSpacing = 50;
   const positions = calculateMatchPositions(stages);
 
-  // Calculate totalHeight based on the last match position
-  const lastStageIndex = positions.length - 1;
-  const lastStagePositions = positions[lastStageIndex];
-  const lastMatchIndex = lastStagePositions.length - 1;
-  const lastMatchPosition = lastStagePositions[lastMatchIndex];
-
-  const totalHeight = lastMatchPosition + matchHeight;
+  const totalHeight = positions[0][positions[0].length - 1] + matchHeight;
   const totalWidth = stages.length * (matchWidth + horizontalSpacing);
 
   return (
-    <View style={styles.container}>
-      <ScrollView
-        contentContainerStyle={[
-          styles.scrollContainer,
-          { width: totalWidth, height: totalHeight },
-        ]}
-        horizontal
-      >
-        <View style={styles.bracketContainer}>
-          {/* Render Lines */}
-          <Svg height={totalHeight} width={totalWidth} style={styles.linesSvg}>
-            {stages.map((stage, stageIndex) => {
-              if (stageIndex === stages.length - 1) return null;
-              return stage.map((match, matchIndex) => {
-                const nextMatchIndex = Math.floor(matchIndex / 2);
-                const startX =
-                  stageIndex * (matchWidth + horizontalSpacing) + matchWidth;
-                const startY =
-                  positions[stageIndex][matchIndex] + matchHeight / 2;
-                const endX =
-                  (stageIndex + 1) * (matchWidth + horizontalSpacing);
-                const endY =
-                  positions[stageIndex + 1][nextMatchIndex] + matchHeight / 2;
-                const midX = (startX + endX) / 2;
-
-                return (
-                  <React.Fragment key={`line-${stageIndex}-${matchIndex}`}>
-                    {/* Horizontal line from current match to midpoint */}
-                    <Line
-                      x1={startX}
-                      y1={startY}
-                      x2={midX}
-                      y2={startY}
-                      stroke="#FFF"
-                      strokeWidth="2"
-                    />
-                    {/* Vertical line from midpoint to next match */}
-                    <Line
-                      x1={midX}
-                      y1={startY}
-                      x2={midX}
-                      y2={endY}
-                      stroke="#FFF"
-                      strokeWidth="2"
-                    />
-                    {/* Horizontal line from midpoint to next match */}
-                    <Line
-                      x1={midX}
-                      y1={endY}
-                      x2={endX}
-                      y2={endY}
-                      stroke="#FFF"
-                      strokeWidth="2"
-                    />
-                  </React.Fragment>
-                );
-              });
-            })}
-          </Svg>
-
-          {/* Render Matches */}
-          {stages.map((stage, stageIndex) =>
-            stage.map((match, matchIndex) => (
-              <View
-                key={`match-${stageIndex}-${matchIndex}`}
-                style={[
-                  styles.matchContainer,
-                  {
-                    top: positions[stageIndex][matchIndex],
-                    left: stageIndex * (matchWidth + horizontalSpacing),
-                  },
-                ]}
-              >
-                <View style={styles.card}>
-                  <Text style={styles.status}>{match.status}</Text>
-                  <View style={styles.team}>
-                    <Image
-                      source={placeholderFlag}
-                      style={styles.flag}
-                      resizeMode="contain"
-                    />
-                    <Text style={styles.teamName}>{match.team1}</Text>
-                    <Text style={styles.score}>{match.score1}</Text>
-                  </View>
-                  <View style={styles.team}>
-                    <Image
-                      source={placeholderFlag}
-                      style={styles.flag}
-                      resizeMode="contain"
-                    />
-                    <Text style={styles.teamName}>{match.team2}</Text>
-                    <Text style={styles.score}>{match.score2}</Text>
-                  </View>
+    <ScrollView
+      contentContainerStyle={[styles.container, { width: totalWidth, height: totalHeight }]}
+      horizontal
+    >
+      <View style={styles.bracketContainer}>
+        {/* Render Matches */}
+        {stages.map((stage, stageIndex) =>
+          stage.map((match, matchIndex) => (
+            <View
+              key={`match-${stageIndex}-${matchIndex}`}
+              style={[
+                styles.matchContainer,
+                {
+                  top: positions[stageIndex][matchIndex],
+                  left: stageIndex * (matchWidth + horizontalSpacing),
+                },
+              ]}
+            >
+              <View style={styles.card}>
+                <Text style={styles.status}>{match.status}</Text>
+                <View style={styles.team}>
+                  <Image source={placeholderFlag} style={styles.flag} />
+                  <Text style={styles.teamName}>{match.team1}</Text>
+                  <Text style={styles.score}>{match.score1}</Text>
+                </View>
+                <View style={styles.team}>
+                  <Image source={placeholderFlag} style={styles.flag} />
+                  <Text style={styles.teamName}>{match.team2}</Text>
+                  <Text style={styles.score}>{match.score2}</Text>
                 </View>
               </View>
-            ))
-          )}
-        </View>
-      </ScrollView>
-    </View>
+            </View>
+          ))
+        )}
+
+        {/* Render Lines */}
+        <Svg height={totalHeight} width={totalWidth} style={styles.linesSvg}>
+          {stages.map((stage, stageIndex) => {
+            if (stageIndex === stages.length - 1) return null;
+            return stage.map((match, matchIndex) => {
+              const nextMatchIndex = Math.floor(matchIndex / 2);
+              const startX = stageIndex * (matchWidth + horizontalSpacing) + matchWidth;
+              const startY = positions[stageIndex][matchIndex] + matchHeight / 2;
+              const endX = (stageIndex + 1) * (matchWidth + horizontalSpacing);
+              const endY =
+                positions[stageIndex + 1][nextMatchIndex] + matchHeight / 2;
+              const midX = (startX + endX) / 2;
+
+              return (
+                <React.Fragment key={`line-${stageIndex}-${matchIndex}`}>
+                  {/* Horizontal line from current match to midpoint */}
+                  <Line
+                    x1={startX}
+                    y1={startY}
+                    x2={midX}
+                    y2={startY}
+                    stroke="#FFF"
+                    strokeWidth="2"
+                  />
+                  {/* Vertical line from current match to next match */}
+                  <Line
+                    x1={midX}
+                    y1={startY}
+                    x2={midX}
+                    y2={endY}
+                    stroke="#FFF"
+                    strokeWidth="2"
+                  />
+                  {/* Horizontal line from midpoint to next match */}
+                  <Line
+                    x1={midX}
+                    y1={endY}
+                    x2={endX}
+                    y2={endY}
+                    stroke="#FFF"
+                    strokeWidth="2"
+                  />
+                </React.Fragment>
+              );
+            });
+          })}
+        </Svg>
+      </View>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: '#0A0A1A', // Set the background color here
-  },
-  scrollContainer: {
-    // No background color here
+    backgroundColor: '#0A0A1A',
   },
   bracketContainer: {
     position: 'relative',
-    // No background color here
+    flex: 1,
   },
   matchContainer: {
     position: 'absolute',
-    // Remove background color to prevent overlapping
   },
   card: {
     backgroundColor: '#1A1A2E',
@@ -207,9 +186,6 @@ const styles = StyleSheet.create({
     width: 150,
     height: 80,
     justifyContent: 'center',
-    // Elevation and zIndex to bring cards above lines if needed
-    elevation: 1,
-    zIndex: 1,
   },
   status: {
     color: '#FFD700',
@@ -226,7 +202,6 @@ const styles = StyleSheet.create({
     width: 24,
     height: 24,
     marginRight: 8,
-    backgroundColor: 'transparent',
   },
   teamName: {
     flex: 1,
@@ -241,8 +216,5 @@ const styles = StyleSheet.create({
     position: 'absolute',
     left: 0,
     top: 0,
-    // No background color here
-    // Ensure lines are beneath the cards
-    zIndex: 0,
   },
 });
